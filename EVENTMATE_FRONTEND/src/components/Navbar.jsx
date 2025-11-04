@@ -100,6 +100,7 @@ const Navbar = () => {
         const res = await axios.get("http://localhost:8080/user/getsession", {
           withCredentials: true, // important to include cookies/session
         });
+        // console.log(res.data);
         if (res.status === 200) {
           setUser(res.data); // store user object from backend session
         } else {
@@ -108,6 +109,7 @@ const Navbar = () => {
       } catch (err) {
         console.log("Session check failed:", err);
         setUser(null);
+        navigate("/")
       }
     };
 

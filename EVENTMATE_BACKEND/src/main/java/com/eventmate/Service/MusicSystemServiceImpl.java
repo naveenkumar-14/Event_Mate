@@ -1,5 +1,7 @@
 package com.eventmate.Service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,11 @@ public class MusicSystemServiceImpl implements MusicSystemService {
 	public MusicSystem save(MusicSystem musicSystem) {
 		// TODO Auto-generated method stub
 		return musicSystemRepo.save(musicSystem);
+	}
+	@Override
+	public List<MusicSystem> getAll() {
+		// TODO Auto-generated method stub
+		return musicSystemRepo.findAll();
 	}
 
 }

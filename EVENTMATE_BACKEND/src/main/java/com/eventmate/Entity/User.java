@@ -1,5 +1,6 @@
 package com.eventmate.Entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,5 +20,6 @@ public class User {
 	private String userState;
 	private String userCity;
 	private String userInterests;
+	@Column(length=5000)
 	private String userImageURL;
 }

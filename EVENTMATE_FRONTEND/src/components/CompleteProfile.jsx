@@ -1,3 +1,5 @@
+
+
 // import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
@@ -12,241 +14,252 @@
 //   { id: 8, city: "Bengaluru", type: "Food", title: "Feastopia", date: "2025-10-01" },
 // ];
 
-// // Group events by type for display
 // const groupByType = (events) => {
-//   const map = {};
+//   const grouped = {};
 //   events.forEach((ev) => {
-//     if (!map[ev.type]) map[ev.type] = [];
-//     map[ev.type].push(ev);
+//     if (!grouped[ev.type]) grouped[ev.type] = [];
+//     grouped[ev.type].push(ev);
 //   });
-//   return map;
+//   return grouped;
+// };
+
+// const stateCityMap = {
+//   Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],
+//   Karnataka: ["Bengaluru", "Mysuru", "Mangalore", "Hubballi"],
+//   Delhi: ["New Delhi", "Dwarka", "Rohini", "Saket"],
+//   TamilNadu: ["Chennai", "Coimbatore", "Madurai", "Salem"],
+//   Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
+//   Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
+//   WestBengal: ["Kolkata", "Howrah", "Siliguri", "Durgapur"],
+//   Rajasthan: ["Jaipur", "Jodhpur", "Udaipur", "Kota"],
+//   Kerala: ["Kochi", "Thiruvananthapuram", "Kozhikode", "Thrissur"],
+//   UttarPradesh: ["Lucknow", "Kanpur", "Varanasi", "Noida"],
 // };
 
 // const CompleteProfile = () => {
 //   const navigate = useNavigate();
 
 //   const [profile, setProfile] = useState({
-//     name: "",
-//     email: "",
-//     phone: "",
-//     state: "",
-//     city: "",
-//     interests: "",
-//     profilePic: "",
+//     userFullName: "",
+//     userEmail: "",
+//     userMobile: "",
+//     userState: "",
+//     userCity: "",
+//     userInterests: "",
+//     userImageURL: "",
 //   });
 
 //   const [events, setEvents] = useState([]);
 //   const [loading, setLoading] = useState(false);
 //   const [message, setMessage] = useState("");
-//   const [selectedEvent, setSelectedEvent] = useState(null); // modal event
+//   const [selectedEvent, setSelectedEvent] = useState(null);
 
-//   // ✅ Load user profile from localStorage (always consistent)
 //   useEffect(() => {
-//     const stored = localStorage.getItem("userProfile");
-//     if (stored) {
-//       const obj = JSON.parse(stored);
-//       setProfile((prev) => ({ ...prev, ...obj }));
-//     }
-//   }, []);
+//     fetch("http://localhost:8080/user/getsession", {
+//       method: "GET",
+//       credentials: "include",
+//     })
+//       .then((res) => {
+//         if (res.status === 401) {
+//           navigate("/auth");
+//           return null;
+//         }
+//         return res.json();
+//       })
+//       .then((data) => {
+//         if (data) setProfile((prev) => ({ ...prev, ...data }));
+//       })
+//       .catch(() => navigate("/auth"));
+//   }, [navigate]);
 
-//   // ✅ Fetch fake city-based events (AI-like recommendations)
 //   useEffect(() => {
-//     const city = profile.city && profile.city.trim();
+//     const city = profile.userCity?.trim();
 //     if (!city) {
 //       setEvents([]);
 //       setMessage("");
 //       return;
 //     }
 
-//     const fetchFakeEvents = async () => {
+//     const fetchEvents = async () => {
 //       setLoading(true);
-//       setMessage("");
-//       await new Promise((r) => setTimeout(r, 900));
+//       await new Promise((r) => setTimeout(r, 700));
 
 //       const filtered = sampleEvents.filter(
 //         (e) => e.city.toLowerCase() === city.toLowerCase()
 //       );
 
-//       let candidateEvents = [...filtered];
-//       if (candidateEvents.length === 0) {
-//         const fallback = sampleEvents.filter((e) =>
-//           e.city.toLowerCase().includes(city.toLowerCase()[0])
-//         );
-//         candidateEvents = fallback.slice(0, 3);
-//       }
+//       const candidateEvents = filtered.length ? filtered : sampleEvents.slice(0, 3);
 
-//       const interests = (profile.interests || "")
+//       const interests = (profile.userInterests || "")
 //         .toLowerCase()
 //         .split(",")
 //         .map((s) => s.trim())
 //         .filter(Boolean);
 
 //       const scored = candidateEvents.map((ev) => {
-//         const matches = interests.some(
+//         const match = interests.some(
 //           (i) =>
 //             ev.type.toLowerCase().includes(i) ||
 //             ev.title.toLowerCase().includes(i)
 //         );
-//         const aiScore = matches ? 100 + Math.random() * 10 : Math.random() * 50;
-//         return { ...ev, aiScore };
+//         const score = match ? 100 + Math.random() * 10 : Math.random() * 50;
+//         return { ...ev, aiScore: score };
 //       });
 
 //       scored.sort((a, b) => b.aiScore - a.aiScore);
-
 //       setEvents(scored);
-//       if (scored.length === 0)
-//         setMessage("No local hosted events found for this city yet.");
 //       setLoading(false);
+
+//       if (scored.length === 0)
+//         setMessage("No local events found for your city.");
 //     };
 
-//     const t = setTimeout(fetchFakeEvents, 350);
+//     const t = setTimeout(fetchEvents, 300);
 //     return () => clearTimeout(t);
-//   }, [profile.city, profile.interests]);
+//   }, [profile.userCity, profile.userInterests]);
 
-// //   // ✅ Handle image upload
-// //   const handleFileChange = (e) => {
-// //   const file = e.target.files && e.target.files[0];
-// //   if (!file) return;
-// //   if (!file.type.startsWith("image/")) {
-// //     alert("Please choose an image file.");
-// //     return;
-// //   }
-
-// //   const reader = new FileReader();
-// //   reader.onloadend = () => {
-// //     // Only update when fully loaded
-// //     setProfile((prev) => ({ ...prev, profilePic: reader.result }));
-// //   };
-// //   reader.readAsDataURL(file);
-// // };
-
-//   // ✅ Handle input changes
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
-//     setProfile((prev) => ({ ...prev, [name]: value }));
+//     setProfile((prev) => ({ ...prev, [name]: value || "" }));
 //   };
 
-//   // ✅ Save profile to localStorage
-// const handleSave = () => {
-//   if (!profile.phone || !profile.city) {
-//     alert("Please enter at least phone and city.");
-//     return;
-//   }
+//   const handleStateChange = (e) => {
+//     const selectedState = e.target.value;
+//     setProfile((prev) => ({
+//       ...prev,
+//       userState: selectedState,
+//       userCity: "",
+//     }));
+//   };
 
-//   try {
-//     // Double-check profilePic before saving
-//     // if (profile.profilePic && profile.profilePic.length > 5_000_000) {
-//     //   alert("Profile picture is too large. Please upload a smaller image.");
-//     //   return;
-//     // }
+//   const handleSave = () => {
+//     fetch("http://localhost:8080/user/save", {
+//       method: "POST",
+//       credentials: "include",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(profile),
+//     })
+//       .then((res) => {
+//         if (res.ok) setMessage("✅ Profile saved successfully!");
+//         else setMessage("❌ Error saving profile.");
+//       })
+//       .catch(() => setMessage("❌ Failed to connect to server."));
+//   };
 
-//     localStorage.setItem("userProfile", JSON.stringify(profile));
-//     localStorage.setItem("user", JSON.stringify(profile));
-//     setMessage("✅ Profile saved locally! Recommendations updated below.");
-//   } catch (err) {
-//     console.error("Error saving profile:", err);
-//     alert("Error saving profile. Try with smaller image size.");
-//   }
-// };
-
-//   const grouped = groupByType(events);
-
-//   // ✅ Modal logic
 //   const handleViewClick = (ev) => setSelectedEvent(ev);
-
 //   const handleBookEvent = () => {
-//     const user = localStorage.getItem("userProfile");
-//     if (!user) {
-//       if (window.confirm("Please login to book this event. Go to login?")) {
-//         navigate("/auth");
-//       }
-//       return;
-//     }
 //     alert(`🎉 Successfully booked ${selectedEvent.title}!`);
 //     setSelectedEvent(null);
 //   };
+
+//   const grouped = groupByType(events);
 
 //   return (
 //     <div className="complete-profile-page container">
 //       <div className="profile-card">
 //         <h2>Complete your profile</h2>
 
-//         <div className="avatar-row">
-//           {/* <label className="avatar-upload">
-//             <input type="file" accept="image/*" onChange={handleFileChange} />
-//             <div className="avatar-circle" title="Upload profile picture">
-//               {profile.profilePic ? (
-//                 <img src={profile.profilePic} alt="avatar" />
-//               ) : (
-//                 <div className="avatar-placeholder">Add Photo</div>
-//               )}
-//             </div>
-//             <div className="avatar-hint">Click the circle to upload</div>
-//           </label> */}
-//           <label>
-//                 Paste Public Profile Image Link:{" "}
-//                 <input
-//                   type="text"
-//                   name="venueImageLink"
-//                   placeholder="https://example.com/image.jpg"
-//                   onChange={handleChange}
-//                   required
-//                 />
-//               </label>
-//               {/* {formData.userUmageURL && (
-//                 <div style={{ textAlign: "center", marginTop: "10px" }}>
-//                   <img
-//                     src={formData.musicSystemImageUrl}
-//                     alt="Preview"
-//                     style={{
-//                       width: "100px",
-//                       height: "100px",
-//                       borderRadius: "8px",
-//                       objectFit: "cover",
-//                       border: "1px solid #ccc",
-//                     }}
-//                     onError={(e) => (e.target.style.display = "none")}
-//                   />
-//                 </div>
-//               )} */}
-//         </div>
-
 //         <div className="fields">
+//           {/* ✅ Image Preview Section */}
+//           {profile.userImageURL && (
+//             <div style={{ textAlign: "center", marginTop: "10px" }}>
+//               <img
+//                 src={profile.userImageURL}
+//                 alt="Preview"
+//                 style={{
+//                   width: "100px",
+//                   height: "100px",
+//                   borderRadius: "8px",
+//                   objectFit: "cover",
+//                   border: "1px solid #ccc",
+//                 }}
+//                 onError={(e) => (e.target.style.display = "none")}
+//               />
+//             </div>
+//           )}
 //           <label>
-//             Full name
-//             <input name="name" value={profile.name || ""} onChange={handleChange} />
+//             Paste Profile Image URL
+//             <input
+//               name="userImageURL"
+//               value={profile.userImageURL || ""}
+//               onChange={handleChange}
+//               placeholder="https://example.com/image.jpg"
+//             />
+//           </label>
+//           <label>
+//             Full Name
+//             <input
+//               name="userFullName"
+//               value={profile.userFullName || ""}
+//               onChange={handleChange}
+//             />
 //           </label>
 
 //           <label>
 //             Email
-//             <input name="email" value={profile.email || ""} onChange={handleChange} />
+//             <input
+//               name="userEmail"
+//               value={profile.userEmail || ""}
+//               onChange={handleChange}
+//               readOnly
+//             />
 //           </label>
 
 //           <label>
 //             Phone
-//             <input name="phone" value={profile.phone || ""} onChange={handleChange} />
+//             <input
+//               name="userMobile"
+//               value={profile.userMobile || ""}
+//               onChange={handleChange}
+//             />
 //           </label>
 
 //           <label className="two-cols">
 //             <span>
 //               State
-//               <input name="state" value={profile.state || ""} onChange={handleChange} />
+//               <select
+//                 name="userState"
+//                 value={profile.userState || ""}
+//                 onChange={handleStateChange}
+//               >
+//                 <option value="">-- Select State --</option>
+//                 {Object.keys(stateCityMap).map((state) => (
+//                   <option key={state} value={state}>
+//                     {state}
+//                   </option>
+//                 ))}
+//               </select>
 //             </span>
 //             <span>
 //               City
-//               <input name="city" value={profile.city || ""} onChange={handleChange} />
+//               <select
+//                 name="userCity"
+//                 value={profile.userCity || ""}
+//                 onChange={handleChange}
+//               >
+//                 <option value="">-- Select City --</option>
+//                 {stateCityMap[profile.userState]?.map((city) => (
+//                   <option key={city} value={city}>
+//                     {city}
+//                   </option>
+//                 ))}
+//               </select>
 //             </span>
 //           </label>
 
 //           <label>
 //             Interests
 //             <input
-//               name="interests"
-//               value={profile.interests || ""}
+//               name="userInterests"
+//               value={profile.userInterests || ""}
 //               onChange={handleChange}
-//               placeholder="e.g. Music, Sports, Tech"
+//               placeholder="e.g. Music, Tech, Food"
 //             />
 //           </label>
+
+          
+
+          
 
 //           <div className="actions">
 //             <button className="save" onClick={handleSave}>
@@ -262,7 +275,7 @@
 //       </div>
 
 //       <div className="events-card">
-//         <h3>Top events in {profile.city || "your city hosted by us!"}</h3>
+//         <h3>Top events in {profile.userCity || "your city"}</h3>
 
 //         {loading ? (
 //           <p>Loading events...</p>
@@ -290,11 +303,10 @@
 //             </div>
 //           ))
 //         ) : (
-//           <p>Sorry no events currently for this city</p>
+//           <p>No events available</p>
 //         )}
 //       </div>
 
-//       {/* ✅ Modal */}
 //       {selectedEvent && (
 //         <div className="modal-overlay">
 //           <div className="modal-content">
@@ -302,9 +314,9 @@
 //             <p><strong>Type:</strong> {selectedEvent.type}</p>
 //             <p><strong>City:</strong> {selectedEvent.city}</p>
 //             <p><strong>Date:</strong> {selectedEvent.date}</p>
-//             <p className="desc">
+//             <p>
 //               This {selectedEvent.type.toLowerCase()} event is hosted by EventMate.
-//               Join us for an amazing experience with live entertainment!
+//               Join us for an amazing experience!
 //             </p>
 
 //             <div className="modal-actions">
@@ -320,9 +332,11 @@
 
 // export default CompleteProfile;
 
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// 🔹 Sample static events
 const sampleEvents = [
   { id: 1, city: "Mumbai", type: "Tech", title: "CodeVerse", date: "2025-12-15" },
   { id: 2, city: "Mumbai", type: "Music", title: "BeatBazaar", date: "2025-11-10" },
@@ -343,19 +357,45 @@ const groupByType = (events) => {
   return grouped;
 };
 
-// ✅ State and city list for dropdown
+// 🔹 State–City map
 const stateCityMap = {
-  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],
-  Karnataka: ["Bengaluru", "Mysuru", "Mangalore", "Hubballi"],
+  AndhraPradesh: ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Tirupati"],
+  ArunachalPradesh: ["Itanagar", "Tawang", "Ziro", "Pasighat"],
+  Assam: ["Guwahati", "Dibrugarh", "Silchar", "Jorhat"],
+  Bihar: ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur"],
+  Chhattisgarh: ["Raipur", "Bhilai", "Bilaspur", "Korba"],
   Delhi: ["New Delhi", "Dwarka", "Rohini", "Saket"],
-  TamilNadu: ["Chennai", "Coimbatore", "Madurai", "Salem"],
-  Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
+  Goa: ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
   Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
-  WestBengal: ["Kolkata", "Howrah", "Siliguri", "Durgapur"],
-  Rajasthan: ["Jaipur", "Jodhpur", "Udaipur", "Kota"],
+  Haryana: ["Gurugram", "Faridabad", "Panipat", "Karnal"],
+  HimachalPradesh: ["Shimla", "Manali", "Dharamshala", "Solan"],
+  Jharkhand: ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro"],
+  Karnataka: ["Bengaluru", "Mysuru", "Mangalore", "Hubballi"],
   Kerala: ["Kochi", "Thiruvananthapuram", "Kozhikode", "Thrissur"],
-  UttarPradesh: ["Lucknow", "Kanpur", "Varanasi", "Noida"],
+  MadhyaPradesh: ["Bhopal", "Indore", "Gwalior", "Jabalpur"],
+  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
+  Manipur: ["Imphal", "Thoubal", "Bishnupur"],
+  Meghalaya: ["Shillong", "Tura", "Jowai"],
+  Mizoram: ["Aizawl", "Lunglei", "Champhai"],
+  Nagaland: ["Kohima", "Dimapur", "Wokha"],
+  Odisha: ["Bhubaneswar", "Cuttack", "Rourkela", "Puri"],
+  Punjab: ["Ludhiana", "Amritsar", "Jalandhar", "Patiala"],
+  Rajasthan: ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer"],
+  Sikkim: ["Gangtok", "Namchi", "Pelling"],
+  TamilNadu: ["Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli"],
+  Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
+  Tripura: ["Agartala", "Udaipur", "Dharmanagar"],
+  UttarPradesh: ["Lucknow", "Kanpur", "Varanasi", "Noida", "Agra"],
+  Uttarakhand: ["Dehradun", "Haridwar", "Rishikesh", "Nainital"],
+  WestBengal: ["Kolkata", "Howrah", "Siliguri", "Durgapur"],
+  Chandigarh: ["Chandigarh"],
+  JammuKashmir: ["Srinagar", "Jammu", "Anantnag", "Baramulla"],
+  Ladakh: ["Leh", "Kargil"],
+  Puducherry: ["Pondicherry", "Karaikal", "Mahe"],
+  AndamanNicobar: ["Port Blair", "Diglipur", "Rangat"],
+  Lakshadweep: ["Kavaratti", "Agatti", "Minicoy"],
 };
+
 
 const CompleteProfile = () => {
   const navigate = useNavigate();
@@ -375,24 +415,45 @@ const CompleteProfile = () => {
   const [message, setMessage] = useState("");
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  // ✅ Fetch session user and prefill details
   useEffect(() => {
-    fetch("http://localhost:8080/user/getsession", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (res.status === 401) {
+    const fetchSessionUser = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/user/getsession", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (res.status === 401 || res.status === 403) {
           navigate("/auth");
-          return null;
+          return;
         }
-        return res.json();
-      })
-      .then((data) => {
-        if (data) setProfile((prev) => ({ ...prev, ...data }));
-      })
-      .catch(() => navigate("/auth"));
+
+        const data = await res.json();
+
+        if (data && Object.keys(data).length > 0) {
+          setProfile({
+            userFullName: data.userFullName || "",
+            userEmail: data.userEmail || "",
+            userMobile: data.userMobile ? String(data.userMobile) : "",
+            userState: data.userState || "",
+            userCity: data.userCity || "",
+            userInterests: data.userInterests || "",
+            userImageURL: data.userImageURL || "",
+          });
+        } else {
+          navigate("/auth");
+        }
+      } catch (error) {
+        console.error("Session fetch failed:", error);
+        navigate("/auth");
+      }
+    };
+
+    fetchSessionUser();
   }, [navigate]);
 
+  // ✅ Fetch AI–based suggested events
   useEffect(() => {
     const city = profile.userCity?.trim();
     if (!city) {
@@ -409,7 +470,8 @@ const CompleteProfile = () => {
         (e) => e.city.toLowerCase() === city.toLowerCase()
       );
 
-      const candidateEvents = filtered.length ? filtered : sampleEvents.slice(0, 3);
+      const candidateEvents =
+        filtered.length > 0 ? filtered : sampleEvents.slice(0, 3);
 
       const interests = (profile.userInterests || "")
         .toLowerCase()
@@ -431,43 +493,56 @@ const CompleteProfile = () => {
       setEvents(scored);
       setLoading(false);
 
-      if (scored.length === 0)
+      if (scored.length === 0) {
         setMessage("No local events found for your city.");
+      }
     };
 
     const t = setTimeout(fetchEvents, 300);
     return () => clearTimeout(t);
   }, [profile.userCity, profile.userInterests]);
 
+  // ✅ Handle Input Changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value || "" }));
   };
 
-  // ✅ Handle State change to reset city
   const handleStateChange = (e) => {
     const selectedState = e.target.value;
     setProfile((prev) => ({
       ...prev,
       userState: selectedState,
-      userCity: "", // reset city when state changes
+      userCity: "",
     }));
   };
 
-  const handleSave = () => {
-    fetch("http://localhost:8080/user/save", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profile),
-    })
-      .then((res) => {
-        if (res.ok) setMessage("✅ Profile saved successfully!");
-        else setMessage("❌ Error saving profile.");
-      })
-      .catch(() => setMessage("❌ Failed to connect to server."));
+  // ✅ Save Updated Profile to Backend
+  const handleSave = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/user/save", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...profile,
+          userMobile: profile.userMobile
+            ? Number(profile.userMobile)
+            : null,
+        }),
+      });
+
+      if (res.ok) {
+        setMessage("✅ Profile saved successfully!");
+      } else {
+        setMessage("❌ Error saving profile.");
+      }
+    } catch (err) {
+      setMessage("❌ Failed to connect to server.");
+    }
   };
 
+  // ✅ Event Popup Logic
   const handleViewClick = (ev) => setSelectedEvent(ev);
   const handleBookEvent = () => {
     alert(`🎉 Successfully booked ${selectedEvent.title}!`);
@@ -482,6 +557,34 @@ const CompleteProfile = () => {
         <h2>Complete your profile</h2>
 
         <div className="fields">
+          {/* ✅ Image Preview */}
+          {profile.userImageURL && (
+            <div style={{ textAlign: "center", marginTop: "10px" }}>
+              <img
+                src={profile.userImageURL}
+                alt="Preview"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "8px",
+                  objectFit: "cover",
+                  border: "1px solid #ccc",
+                }}
+                onError={(e) => (e.target.style.display = "none")}
+              />
+            </div>
+          )}
+
+          <label>
+            Paste Profile Image URL
+            <input
+              name="userImageURL"
+              value={profile.userImageURL || ""}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+            />
+          </label>
+
           <label>
             Full Name
             <input
@@ -507,10 +610,10 @@ const CompleteProfile = () => {
               name="userMobile"
               value={profile.userMobile || ""}
               onChange={handleChange}
+              placeholder="Enter 10-digit number"
             />
           </label>
 
-          {/* ✅ State and City Dropdowns */}
           <label className="two-cols">
             <span>
               State
@@ -554,16 +657,6 @@ const CompleteProfile = () => {
             />
           </label>
 
-          <label>
-            Paste Profile Image URL
-            <input
-              name="userImageURL"
-              value={profile.userImageURL || ""}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-            />
-          </label>
-
           <div className="actions">
             <button className="save" onClick={handleSave}>
               Save Profile
@@ -577,6 +670,7 @@ const CompleteProfile = () => {
         </div>
       </div>
 
+      {/* 🔹 Event Recommendations */}
       <div className="events-card">
         <h3>Top events in {profile.userCity || "your city"}</h3>
 
@@ -610,21 +704,35 @@ const CompleteProfile = () => {
         )}
       </div>
 
+      {/* 🔹 Event Modal */}
       {selectedEvent && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>{selectedEvent.title}</h3>
-            <p><strong>Type:</strong> {selectedEvent.type}</p>
-            <p><strong>City:</strong> {selectedEvent.city}</p>
-            <p><strong>Date:</strong> {selectedEvent.date}</p>
             <p>
-              This {selectedEvent.type.toLowerCase()} event is hosted by EventMate.
-              Join us for an amazing experience!
+              <strong>Type:</strong> {selectedEvent.type}
+            </p>
+            <p>
+              <strong>City:</strong> {selectedEvent.city}
+            </p>
+            <p>
+              <strong>Date:</strong> {selectedEvent.date}
+            </p>
+            <p>
+              This {selectedEvent.type.toLowerCase()} event is hosted by
+              EventMate. Join us for an amazing experience!
             </p>
 
             <div className="modal-actions">
-              <button className="book" onClick={handleBookEvent}>Book Now</button>
-              <button className="close" onClick={() => setSelectedEvent(null)}>Close</button>
+              <button className="book" onClick={handleBookEvent}>
+                Book Now
+              </button>
+              <button
+                className="close"
+                onClick={() => setSelectedEvent(null)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

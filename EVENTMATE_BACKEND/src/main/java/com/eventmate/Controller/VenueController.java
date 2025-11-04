@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,26 +29,45 @@ public class VenueController {
 	    return venueService.save(venue);
 	}
 	
+	@GetMapping("/cities")
+	public List<String> cityList(){
+		List<String> cities=new ArrayList<>();
+		for(Venue v:venueService.getAll()) {
+			if(!cities.contains(v.getVenueCity())) {
+				cities.add(v.getVenueCity());
+			}
+		}
+		return cities;
+	}
 	
-	
-	@GetMapping("/list")
-  public List<Map<String, Object>> getVenues() {
-
-      List<Map<String, Object>> venues = new ArrayList<>();
-      List<Venue> all=venueService.getAll(); 
-      
-      for(Venue v:all) {
-    	  venues.add(Map.of(
-                  "id", v.getVenueId(),
-                  "name",v.getVenueName(),
-                  "city", v.getVenueCity(),
-                  "budget", v.getVenueBudget(),
-                  "rating", v.getVenueRating(),
-                  "minGuests", v.getVenueMinGuests(),
-                  "maxGuests", v.getVenueMaxGuests(),
-                  "image", v.getVenueImageLink()
-          ));
-      }
+	@GetMapping("/list/{venueCity}")
+	public List<Venue> venueList(@PathVariable String venueCity){
+		
+		List<Venue> venues=new ArrayList<>();
+		for(Venue v:venueService.getAll()) {
+			if(v.getVenueCity().equals(venueCity)) {
+				venues.add(v);
+			}
+		}
+		return venues;
+	}
+//  public List<Map<String, Object>> getVenues() {
+//
+//      List<Map<String, Object>> venues = new ArrayList<>();
+//      List<Venue> all=venueService.getAll(); 
+//      
+//      for(Venue v:all) {
+//    	  venues.add(Map.of(
+//                  "id", v.getVenueId(),
+//                  "name",v.getVenueName(),
+//                  "city", v.getVenueCity(),
+//                  "budget", v.getVenueBudget(),
+//                  "rating", v.getVenueRating(),
+//                  "minGuests", v.getVenueMinGuests(),
+//                  "maxGuests", v.getVenueMaxGuests(),
+//                  "image", v.getVenueImageLink()
+//          ));
+//      }
       // 1
 //      venues.add(Map.of(
 //              "id", 1,
@@ -168,6 +188,6 @@ public class VenueController {
 //              "image", "/hall10.jpg"
 //      ));
 
-      return venues;
-  }
+//      return venues;
+//}
 }

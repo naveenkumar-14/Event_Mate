@@ -23,19 +23,23 @@ public class Event {
 	private LocalDate eventDate;
 	private LocalTime eventTime;
 	private Integer eventDuration;
-	private Double eventBudget;
 	private String eventDecoration;
 	private String eventFood;
 	private String eventNotes;
+	private String eventStatus = "active";
 	@ManyToOne
     @JoinColumn(name = "venue_id")
-    private Venue venue;  
+    private Venue eventVenue;  
 	
 	@ManyToOne
 	 @JoinColumn(name = "music_system_id")
-    private MusicSystem musicSystem; 
+    private MusicSystem eventMusicSystem; 
 	
 	@ManyToOne
     @JoinColumn(name = "photographer_id")
-    private Photographer photographer;
+    private Photographer eventPhotographer;
+	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private User eventUser;
 }
