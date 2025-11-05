@@ -184,29 +184,14 @@ Frontend (React)  <—>  Backend (Spring Boot REST API)  <—>  Database (MySQL)
 
 ## 👨‍💻 Contributors
 
-* **[Your Name]** – Full Stack Developer
-* **[Teammate Name]** – Backend Engineer
-* **[Teammate Name]** – Frontend Developer
-* **Mentor:** [Guide Name]
+* **K Naveen Kumar** – Full Stack Developer
 
----
+
 
 ## 📎 License
 
 This project is for academic and educational purposes.
 © 2025 Event Mate. All rights reserved.
-
----
-
-## 📷 Screenshots (Recommended to Add)
-
-1. Login Page
-2. Dashboard
-3. Add Event Form
-4. My Bookings
-5. Venue Management
-
----
 
 ⭐ **If you like this project, give it a star on GitHub!**
 
