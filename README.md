@@ -149,7 +149,7 @@ Frontend (React)  <—>  Backend (Spring Boot REST API)  <—>  Database (MySQL)
    ```bash
    npm start
    ```
-4. Frontend runs at: `http://localhost:3000/`
+4. Frontend runs at: `http://localhost:5173/`
 
 ---
 
